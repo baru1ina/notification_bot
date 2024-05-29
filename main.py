@@ -236,7 +236,7 @@ async def upload_files(callback: CallbackQuery):
 
 #загрузка нового файла на гугл диск
 @dp.message_handler(state=EditTasks.Edit_Files)
-async def uplode_new_files(message:Message, state: FSMContext):
+async def uplode_new_files(message: Message, state: FSMContext):
     await bot.send_message(chat_id=message.from_user.id,
                            text='Прикрепите файл',
                            reply_markup=ikb_cancel)
@@ -259,9 +259,6 @@ async def doc_handler(message: types.Message, state: FSMContext)-> None:
     await state.finish()
 
 
-
-
-
 #изменение описания
 @dp.callback_query_handler(text='edit_description', state=EditTasks.Get_inline_menu)
 async def edit_description(callback: CallbackQuery):
@@ -280,8 +277,8 @@ async def edit_description(callback: CallbackQuery):
 в графу статус не установится значение "send" а вместо этого, дата уведомления увеличится на период (в днях), указанный пользователем"""
 
 @dp.callback_query_handler(text='edit_periodic',state=EditTasks.Get_inline_menu)
-async def edit_periodic_state(callback:CallbackQuery, state:FSMContext):
-    period = await get_periodic_state(state,callback.from_user.id)
+async def edit_periodic_state(callback: CallbackQuery, state: FSMContext):
+    period = await get_periodic_state(state, callback.from_user.id)
     print(period)
     if period[0] == 0:
         await bot.send_message(chat_id=callback.from_user.id, text='Введите желаемый период в днях')
@@ -293,8 +290,8 @@ async def edit_periodic_state(callback:CallbackQuery, state:FSMContext):
 
 #обработка ввода периода пользователем
 @dp.message_handler(state=EditTasks.Edit_Periodic)
-async def set_period(message:Message,state:FSMContext):
-    await update_pereodic_of_task_yes(message.from_user.id,state,int(message.text))
+async def set_period(message: Message, state: FSMContext):
+    await update_pereodic_of_task_yes(message.from_user.id, state, int(message.text))
     await message.answer(f'Успешно! Установлен период оповещения в {message.text} дня')
     await state.finish()
 
@@ -351,7 +348,7 @@ async def edit_done_station(callback: CallbackQuery,state: FSMContext)->None:
 
 #выбор параметра, который хотим изменить
 @dp.callback_query_handler(state=EditTasks.Get_inline_menu)
-async def get_edit_inline_keyboard(callback: CallbackQuery, state: FSMContext)->None:
+async def get_edit_inline_keyboard(callback: CallbackQuery, state: FSMContext) -> None:
     async with state.proxy() as data:
         data['name'] = callback['data']
     await bot.send_message(chat_id=callback.from_user.id, text='Выберите, что хотите отредактировать.'
@@ -366,21 +363,21 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
     async with state.proxy() as data:
         data['date'] = date.strftime("%d/%m/%Y")
     await edit_project(state, callback_query.from_user.id)
-    await bot.send_message(chat_id=callback_query.from_user.id, text = 'Дата успешно изменена')
+    await bot.send_message(chat_id=callback_query.from_user.id, text='Дата успешно изменена')
     await EditTasks.Get_inline_menu.set()
 
 
 #если при создании проекта нужен файл, просим пользователя ввести имя, которое будет использоваться при хранении этого файла на диске
-@dp.callback_query_handler(text = 'with_file', state = PlanThingsProcces.Calendar)
-async def get_file_name(message:Message, state: FSMContext):
+@dp.callback_query_handler(text='with_file', state = PlanThingsProcces.Calendar)
+async def get_file_name(message: Message, state: FSMContext):
     await bot.send_message(chat_id=message.from_user.id,
                            text='Введите имя файла')
     await PlanThingsProcces.FileName.set()
 
 
 #записываем имя файла и просим пользователя загрузить его
-@dp.message_handler(state = PlanThingsProcces.FileName)
-async def get_file_function(message: types.Message, state:FSMContext)->None:
+@dp.message_handler(state=PlanThingsProcces.FileName)
+async def get_file_function(message: types.Message, state: FSMContext) -> None:
     await bot.send_message(chat_id=message.from_user.id,
                            text = 'Прикрепите файл',
                         reply_markup=ikb_cancel)
@@ -390,15 +387,15 @@ async def get_file_function(message: types.Message, state:FSMContext)->None:
 
 #если файлы при создании проекта не нужны
 @dp.callback_query_handler(text = 'without_file', state=PlanThingsProcces.Calendar)
-async def dont_get_file_function(message:types.Message, state = FSMContext) -> None:
+async def dont_get_file_function(message: types.Message, state=FSMContext) -> None:
     await bot.send_message(chat_id=message.from_user.id,
-                           text = 'Введите время, когда хотели бы получить напоминание в формате HH:MM')
+                           text='Введите время, когда хотели бы получить напоминание в формате HH:MM')
     await  PlanThingsProcces.NotificationTime.set()
 
 
 #последний этап создания проекта и запись его в базу данных
 @dp.message_handler(state=PlanThingsProcces.NotificationTime)
-async def add_time_notification(message:Message, state: FSMContext)->None:
+async def add_time_notification(message: Message, state: FSMContext) -> None:
     async with state.proxy() as data_dict:
         data_dict['notification_time'] = message.text
     await create_project(state,message.from_user.id)
@@ -417,7 +414,7 @@ async def add_time_notification(message:Message, state: FSMContext)->None:
 
 #обработчик загрузки файлов при создании дела
 @dp.message_handler(content_types = types.ContentTypes.DOCUMENT, state = PlanThingsProcces.Document)
-async def doc_handler(message: types.Message, state: FSMContext)-> None:
+async def doc_handler(message: types.Message, state: FSMContext) -> None:
     print("зашел doc_handler")
     async with state.proxy() as data:
         if document := message.document:
@@ -439,7 +436,7 @@ async def add_files(callback:CallbackQuery):
 
 #закончить добавление файлов
 @dp.callback_query_handler(text='end_add_files', state=PlanThingsProcces.Document)
-async def set_time(callback:CallbackQuery):
+async def set_time(callback: CallbackQuery):
     await bot.send_message(chat_id=callback.from_user.id,
                            text='Введите время, когда хотели бы получить напоминание в формате HH:MM')
     await  PlanThingsProcces.NotificationTime.set()
