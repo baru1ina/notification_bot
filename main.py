@@ -473,6 +473,12 @@ async def notification_function():
                 #обнавляем дату периодического дела
                 await update_date_task_for_pereodic(task[0], task[1], res_date)
 
+# async def start_bot_polling():
+#     scheduler = AsyncIOScheduler()
+#     scheduler.add_job(notification_function, 'interval', seconds=3)
+#     scheduler.start()
+#     executor.start_polling(dp, skip_updates=True,
+#                            on_startup=on_startup)
 
 if __name__ == '__main__':
     scheduler = AsyncIOScheduler()
@@ -480,3 +486,7 @@ if __name__ == '__main__':
     scheduler.start()
     executor.start_polling(dp, skip_updates=True,
                            on_startup=on_startup)
+    # bot_thread = threading.Thread(target=start_bot_polling)
+    # bot_thread.start()
+    #
+    # uvicorn.run('server:app', host='0.0.0.0', port=5000, reload=True)
